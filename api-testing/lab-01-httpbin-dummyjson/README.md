@@ -20,12 +20,42 @@ Laboratorio práctico de testing de APIs con **Postman**: envío de headers, log
 
 ## Cómo ejecutar
 
-1. Importar `Lab-HTTPBin-DummyJSON.postman_collection.json` en Postman.
-2. Ejecutar los requests en orden (01 → 04c), o usar **Run collection**.
+### Desde Postman
+
+1. Importar `Lab-HTTPBin-DummyJSON.postman_collection.json` y `DummyJSON.postman_environment.json`.
+2. Ejecutar los requests en orden (01 → 07), o usar **Run collection**.
 3. El request `02` guarda el token en la variable de colección `accessToken`; los siguientes lo usan con `{{accessToken}}`.
 4. **Importante:** antes de los casos 04, borrar las cookies de `dummyjson.com` (botón *Cookies* en Postman). Ver hallazgo H2.
 5. El token dura **30 minutos** (`expiresInMins: 30` en el login). Si pasó más tiempo, volver a ejecutar `02` antes de los demás.
 6. El test de `04c` **falla a propósito**: su aserción espera el comportamiento correcto (401) y el fallo es la evidencia de BUG-001. No se modificó para que pase.
+
+El request `04a` limpia las cookies de `dummyjson.com` en su script pre-request, así que el caso "sin token" se prueba de verdad tanto en Postman como en Newman. Ver hallazgo H2.
+
+### Desde la terminal con Newman
+
+Requiere Node.js y `npm install -g newman newman-reporter-htmlextra`.
+
+```bash
+newman run Lab-HTTPBin-DummyJSON.postman_collection.json \
+  -e DummyJSON.postman_environment.json \
+  -r "cli,htmlextra"
+```
+
+En PowerShell las comillas alrededor de `cli,htmlextra` son necesarias: sin ellas la coma se interpreta como separador de lista y el reporter no se encuentra.
+
+El reporte HTML se genera en `newman/` (carpeta excluida del repositorio por ser salida generada). En `evidencia/` se conserva una corrida concreta como respaldo.
+
+**Newman termina con código de salida 1** por el fallo de `04c`. Es el comportamiento correcto: así le informa a un sistema de CI que la suite no pasó.
+
+### Última corrida registrada (18/09/2026)
+
+| Métrica | Total | Fallidos |
+|---|---|---|
+| Requests | 9 | 0 |
+| Test scripts | 8 | 0 |
+| Aserciones | 12 | 1 |
+
+El único fallo es la aserción de BUG-001. Evidencia: `evidencia/reporte-newman-2026-09-18.html`
 
 ---
 
@@ -132,7 +162,10 @@ Además confirma que el parámetro `expiresInMins` del login funciona como indic
 ```
 lab-01-httpbin-dummyjson/
 ├── README.md
-├── Lab-HTTPBin-DummyJSON.postman_collection.json   (pendiente de exportar)
+├── Lab-HTTPBin-DummyJSON.postman_collection.json
+├── DummyJSON.postman_environment.json
+├── evidencia/
+│   └── reporte-newman-2026-09-18.html
 └── capturas/
     ├── 01-headers-x-demo-trace-reflejado.png
     ├── 01-headers-script-y-response.png
