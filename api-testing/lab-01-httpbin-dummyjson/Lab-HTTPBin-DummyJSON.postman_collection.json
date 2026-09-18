@@ -1,0 +1,385 @@
+{
+  "info": {
+    "_postman_id": "22c789a7-b943-4f18-9074-33230bf9ba5b",
+    "name": "Lab HTTPBin + DummyJSON",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56795142",
+    "_collection_link": "https://go.postman.co/collection/56795142-22c789a7-b943-4f18-9074-33230bf9ba5b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "01-Headers",
+      "item": [
+        {
+          "name": "01 - GET headers HTTPBin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"X-Demo-Trace reflejado en la response\", () => {\r\n    const headers = pm.response.json().headers;\r\n    pm.expect(headers[\"X-Demo-Trace\"]).to.eql(\"lab-ismael-001\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-Demo-Trace",
+                "value": "lab-ismael-001"
+              }
+            ],
+            "url": {
+              "raw": "https://httpbin.org/headers",
+              "protocol": "https",
+              "host": [
+                "httpbin",
+                "org"
+              ],
+              "path": [
+                "headers"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02-Autenticacion",
+      "item": [
+        {
+          "name": "02 - POST login DummyJSON",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login devuelve 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"La respuesta trae accessToken\", () => {\r\n    pm.expect(pm.response.json().accessToken).to.be.a(\"string\");\r\n});\r\n\r\npm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"emilys\",\r\n  \"password\": \"emilyspass\",\r\n  \"expiresInMins\": 30\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://dummyjson.com/auth/login",
+              "protocol": "https",
+              "host": [
+                "dummyjson",
+                "com"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03 - GET me con token valido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 con token válido\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Devuelve el usuario emilys\", () => {\r\n    pm.expect(pm.response.json().username).to.eql(\"emilys\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://dummyjson.com/auth/me",
+              "protocol": "https",
+              "host": [
+                "dummyjson",
+                "com"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04a - GET me sin token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Sin token devuelve 401\", () => {\r\n    pm.response.to.have.status(401);\r\n});\r\nconsole.log(\"Mensaje sin token:\", pm.response.json().message);"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Este caso debe probarse sin ninguna credencial:\r\n// DummyJSON tambien autentica por cookie, no solo por header Bearer.\r\nconst jar = pm.cookies.jar();\r\njar.clear(\"https://dummyjson.com\", (error) => {\r\n    if (error) console.log(\"No se pudieron borrar las cookies:\", error);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://dummyjson.com/auth/me",
+              "protocol": "https",
+              "host": [
+                "dummyjson",
+                "com"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04b - GET token mal formado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Token mal formado 401\", () => {\r\n    pm.response.to.have.status(401);\r\n});\r\nconsole.log(\"Mensaje token mal formado:\", pm.response.json().message);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "abc123",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://dummyjson.com/auth/me",
+              "protocol": "https",
+              "host": [
+                "dummyjson",
+                "com"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04c - GET token alterado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Sin token alterado 401\", () => {\r\n    pm.response.to.have.status(401);\r\n});\r\nconsole.log(\"Mensaje token alterado:\", pm.response.json().message);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}xyz",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://dummyjson.com/auth/me",
+              "protocol": "https",
+              "host": [
+                "dummyjson",
+                "com"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03-Variables",
+      "item": [
+        {
+          "name": "05 - GET posts con baseUrl",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  ""
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04-Datos-dinamicos",
+      "item": [
+        {
+          "name": "06 - POST datos dinamicos",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nombre\": \"{{$randomFullName}}\",\r\n  \"email\": \"{{$randomEmail}}\",\r\n  \"emailConfirmacion\": \"{{$randomEmail}}\",\r\n  \"edad\": {{$randomInt}},\r\n  \"idExterno\": \"{{$guid}}\",\r\n  \"creadoEn\": {{$timestamp}}\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://httpbin.org/post",
+              "protocol": "https",
+              "host": [
+                "httpbin",
+                "org"
+              ],
+              "path": [
+                "post"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "07 - POST dato dinamico reutilizable",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const email = pm.variables.replaceIn(\"{{$randomEmail}}\");\r\npm.variables.set(\"emailPrueba\", email);\r\nconsole.log(\"Email generado:\", email);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Los dos emails coinciden\", () => {\r\n    const enviado = pm.response.json().json;\r\n    pm.expect(enviado.email).to.eql(enviado.emailConfirmacion);\r\n});\r\n\r\npm.test(\"La API recibio el email que generamos\", () => {\r\n    pm.expect(pm.response.json().json.email).to.eql(pm.variables.get(\"emailPrueba\"));\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"nombre\": \"{{$randomFullName}}\",\r\n  \"email\": \"{{emailPrueba}}\",\r\n  \"emailConfirmacion\": \"{{emailPrueba}}\",\r\n  \"edad\": {{$randomInt}},\r\n  \"idExterno\": \"{{$guid}}\",\r\n  \"creadoEn\": {{$timestamp}}\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://httpbin.org/post",
+              "protocol": "https",
+              "host": [
+                "httpbin",
+                "org"
+              ],
+              "path": [
+                "post"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "accessToken",
+      "value": ""
+    }
+  ]
+}
