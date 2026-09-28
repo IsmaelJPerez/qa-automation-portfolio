@@ -3,7 +3,7 @@
 Laboratorio práctico de testing de APIs con **Postman**: envío de headers, login con token JWT, acceso a un endpoint protegido y casos negativos de autenticación.
 
 - **Autor:** Ismael Pérez
-- **Fecha de ejecución:** 17/09/2026
+- **Fecha de ejecución:** 17/09/2026 (actualizado el 28/09/2026)
 - **Herramientas:** Postman (desktop, Windows), scripts de test en JavaScript (`pm.test`)
 - **APIs bajo prueba:** [HTTPBin](https://httpbin.org) y [DummyJSON](https://dummyjson.com/docs/auth) (APIs públicas de práctica)
 
@@ -47,15 +47,16 @@ El reporte HTML se genera en `newman/` (carpeta excluida del repositorio por ser
 
 **Newman termina con código de salida 1** por el fallo de `04c`. Es el comportamiento correcto: así le informa a un sistema de CI que la suite no pasó.
 
-### Última corrida registrada (18/09/2026)
+### Última corrida registrada (28/09/2026)
 
 | Métrica | Total | Fallidos |
 |---|---|---|
 | Requests | 9 | 0 |
-| Test scripts | 8 | 0 |
-| Aserciones | 12 | 1 |
+| Test scripts | 9 | 0 |
+| Pre-request scripts | 2 | 0 |
+| Aserciones | 18 | 1 |
 
-El único fallo es la aserción de BUG-001. Evidencia: `evidencia/reporte-newman-2026-09-18.html`
+El único fallo es la aserción de BUG-001. Evidencia: `evidencia/reporte-newman-2026-09-28.html`
 
 ---
 
@@ -70,7 +71,10 @@ El único fallo es la aserción de BUG-001. Evidencia: `evidencia/reporte-newman
 | 04a | `GET dummyjson.com/auth/me` | Sin token, **sin** cookies | 401 | 401 `"Access Token is required"` | ✅ Pass |
 | 04b | `GET dummyjson.com/auth/me` | `Bearer abc123` (token malformado) | 401 | 401 `"Invalid/Expired Token!"` | ✅ Pass |
 | 04c | `GET dummyjson.com/auth/me` | `Bearer {{accessToken}}xyz` (firma alterada) | 401 | **500** `"invalid signature"` | ❌ Fail — ver BUG-001 |
-| 04d | `GET dummyjson.com/auth/me` | `Bearer {{accessToken}}` vencido (login con `expiresInMins: 30`, enviado a los ~35 min) | 401 | 401 `"Token Expired!"` | ✅ Pass — ver H5 |
+| 04d | `GET dummyjson.com/auth/me` *(caso manual, fuera de la colección)* | `Bearer {{accessToken}}` vencido (login con `expiresInMins: 30`, enviado a los ~35 min) | 401 | 401 `"Token Expired!"` | ✅ Pass — ver H5 |
+| 05 | `GET {{baseUrl}}/posts` | Environment `DummyJSON` | 200, lista de posts no vacía, URL resuelta desde `baseUrl` | 200, las 3 validaciones correctas | ✅ Pass |
+| 06 | `POST httpbin.org/post` | Variables dinámicas: `$randomFullName`, `$randomEmail`, `$randomInt`, `$guid`, `$timestamp` | 200 y datos con formato válido | 200; `email` y `emailConfirmacion` distintos | ✅ Pass — ver H6 |
+| 07 | `POST httpbin.org/post` | Email generado una sola vez en pre-request y guardado en `emailPrueba` | 200; `email` = `emailConfirmacion` = valor generado | 200, los tres valores coinciden | ✅ Pass |
 
 Cada request tiene tests automáticos en **Scripts → After response** que validan el status code y el contenido relevante.
 
@@ -147,6 +151,16 @@ Además confirma que el parámetro `expiresInMins` del login funciona como indic
 
 ---
 
+### H6 — Cada variable dinámica genera un valor nuevo en cada aparición
+
+En el request 06, los campos `email` y `emailConfirmacion` usan cada uno `{{$randomEmail}}`. Postman genera **un email distinto por cada aparición**, así que los dos campos nunca coinciden. El test *"Cada {{$randomEmail}} genera un valor distinto"* documenta ese comportamiento.
+
+**Solución (request 07):** generar el valor una sola vez en el script pre-request con `pm.variables.replaceIn("{{$randomEmail}}")`, guardarlo en la variable `emailPrueba` y usar `{{emailPrueba}}` en los dos campos.
+
+**Por qué importa:** un formulario de registro con "confirmar email" fallaría siempre con datos generados de la primera forma, y se podría reportar como bug algo que en realidad es un error en los datos de prueba.
+
+---
+
 ## Lecciones aprendidas
 
 - Un status 401 en un caso negativo es un **resultado correcto**; las sugerencias automáticas de Postman que proponen "arreglar" la aserción no reemplazan el criterio del tester.
@@ -165,7 +179,7 @@ lab-01-httpbin-dummyjson/
 ├── Lab-HTTPBin-DummyJSON.postman_collection.json
 ├── DummyJSON.postman_environment.json
 ├── evidencia/
-│   └── reporte-newman-2026-09-18.html
+│   └── reporte-newman-2026-09-28.html
 └── capturas/
     ├── 01-headers-x-demo-trace-reflejado.png
     ├── 01-headers-script-y-response.png
