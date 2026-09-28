@@ -223,7 +223,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Sin token alterado 401\", () => {\r\n    pm.response.to.have.status(401);\r\n});\r\nconsole.log(\"Mensaje token alterado:\", pm.response.json().message);"
+                  "pm.test(\"Token con firma alterada debe responder 401\", () => {\r\n    pm.response.to.have.status(401);\r\n});\r\nconsole.log(\"Mensaje token alterado:\", pm.response.json().message);"
                 ]
               }
             }
@@ -269,7 +269,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  ""
+                  "pm.test(\"Status 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Devuelve una lista de posts no vacía\", () => {\r\n    const body = pm.response.json();\r\n    pm.expect(body.posts).to.be.an(\"array\").that.is.not.empty;\r\n});\r\n\r\npm.test(\"La request usó la variable baseUrl del environment\", () => {\r\n    pm.expect(pm.request.url.toString()).to.include(\"dummyjson.com\");\r\n});"
                 ]
               }
             }
@@ -299,6 +299,17 @@
       "item": [
         {
           "name": "06 - POST datos dinamicos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Los datos dinámicos llegaron al servidor con el formato correcto\", () => {\r\n    const enviado = pm.response.json().json;\r\n    pm.expect(enviado.nombre).to.be.a(\"string\").and.not.empty;\r\n    pm.expect(enviado.email).to.include(\"@\");\r\n    pm.expect(enviado.edad).to.be.a(\"number\");\r\n});\r\n\r\npm.test(\"Cada {{$randomEmail}} genera un valor distinto\", () => {\r\n    const enviado = pm.response.json().json;\r\n    pm.expect(enviado.email).to.not.eql(enviado.emailConfirmacion);\r\n});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [],
