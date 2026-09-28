@@ -29,6 +29,7 @@ Automatización de [saucedemo.com](https://www.saucedemo.com) con Page Object Mo
 - **Capturas automáticas:** cuando un test falla, se guarda una captura de pantalla con fecha y hora.
 - **Reporte HTML:** un `ITestListener` genera un reporte con ExtentReports; los tests fallidos incluyen el error (esperado vs. obtenido) y la captura embebida.
 - **Ejecución en paralelo:** la suite `testng.xml` corre los grupos *Login* y *Carrito* en hilos separados.
+- **Tests de API con RestAssured:** casos de autenticación del Lab 01 automatizados en Java (incluido BUG-001), CRUD de productos y validación de contrato con JSON Schema, en la misma suite que los tests web.
 
 **Cómo ejecutarlo:** abrir `semana-5` en IntelliJ IDEA → clic derecho en `testng.xml` → *Run*. El reporte se genera en `semana-5/reportes/reporte.html`.
 
