@@ -15,9 +15,10 @@
             <class name="tests.CarritoTest"/>
         </classes>
     </test>
-    <test name="API - Autenticacion">
+    <test name="API">
         <classes>
             <class name="tests.api.AuthApiTest"/>
+            <class name="tests.api.ProductosApiTest"/>
         </classes>
     </test>
 
