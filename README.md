@@ -14,7 +14,7 @@ Cada carpeta corresponde a una etapa del plan. Todo el trabajo se integró media
 | Automatización web | Selenium WebDriver 4, Page Object Model |
 | Framework de tests | TestNG (suites, DataProvider, listeners), JUnit 5 |
 | Reportes | ExtentReports (HTML con capturas embebidas) |
-| Testing de APIs | Postman (colecciones, environments, scripts), Newman |
+| Testing de APIs | Postman (colecciones, environments, scripts), Newman, RestAssured, JSON Schema |
 | Control de versiones | Git + GitHub (ramas, pull requests) |
 
 ---
