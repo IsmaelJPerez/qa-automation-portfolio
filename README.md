@@ -64,7 +64,6 @@ Detalle completo, casos de prueba y evidencias en el [README del lab](api-testin
 
 ## Próximos pasos
 
-- Tests de API en Java con RestAssured, integrados a la misma suite de TestNG
 - BDD con Cucumber (Gherkin)
 - Pipeline de integración continua con GitHub Actions
 
