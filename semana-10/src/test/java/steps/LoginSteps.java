@@ -6,6 +6,7 @@ import io.cucumber.java.es.Entonces;
 import org.testng.Assert;
 import pages.InventoryPage;
 import pages.LoginPage;
+import config.Config;
 
 // Step definitions: el "pegamento" entre cada frase del .feature y los Page Objects.
 public class LoginSteps {
@@ -15,7 +16,7 @@ public class LoginSteps {
     @Dado("que estoy en la página de login")
     public void queEstoyEnLaPaginaDeLogin() {
         loginPage = new LoginPage(Hooks.getDriver());
-        loginPage.abrir();
+        loginPage.abrir(Config.get("web.url"));
     }
 
     // {string} captura el texto entre comillas del .feature y lo pasa como parámetro

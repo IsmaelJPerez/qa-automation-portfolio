@@ -9,10 +9,11 @@ import io.restassured.response.Response;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import config.Config;
 
 public class AuthApiSteps {
 
-    private static final String BASE_URL = "https://dummyjson.com";
+    private static final String BASE_URL = Config.get("api.url");
 
     // Cucumber crea una instancia nueva por escenario:
     // estos campos se comparten entre los pasos de UN escenario, no entre escenarios
