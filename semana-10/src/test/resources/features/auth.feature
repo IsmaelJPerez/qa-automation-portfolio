@@ -7,17 +7,17 @@ Característica: Autenticación en la API de DummyJSON
 
   @smoke
   Escenario: Login válido devuelve un token
-    Cuando hago login en la API con el usuario "emilys" y la clave "emilyspass"
+    Cuando hago login en la API con el usuario de prueba
     Entonces la respuesta tiene código 200
     Y la respuesta incluye el campo "accessToken"
-    Y el campo "username" es "emilys"
+    Y el campo "username" es el del usuario de prueba
 
   @regression
   Escenario: Consultar mi perfil con un token válido
-    Dado que tengo un token válido del usuario "emilys" con clave "emilyspass"
+    Dado que tengo un token válido del usuario de prueba
     Cuando consulto mi perfil con ese token
     Entonces la respuesta tiene código 200
-    Y el campo "username" es "emilys"
+    Y el campo "username" es el del usuario de prueba
 
   @regression
   Escenario: Consultar mi perfil sin token
@@ -33,6 +33,6 @@ Característica: Autenticación en la API de DummyJSON
 
   @bug
   Escenario: BUG-001 - Token con firma alterada debería devolver 401
-    Dado que tengo un token válido del usuario "emilys" con clave "emilyspass"
+    Dado que tengo un token válido del usuario de prueba
     Cuando consulto mi perfil con el token alterado
     Entonces la respuesta tiene código 401

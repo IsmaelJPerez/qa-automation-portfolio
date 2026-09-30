@@ -9,7 +9,7 @@ Característica: Login en SauceDemo
 
   @smoke
   Escenario: Login exitoso con usuario estándar
-    Cuando inicio sesión con el usuario "standard_user" y la clave "secret_sauce"
+    Cuando inicio sesión como el usuario "estandar"
     Entonces veo la página de productos
 
   @regression

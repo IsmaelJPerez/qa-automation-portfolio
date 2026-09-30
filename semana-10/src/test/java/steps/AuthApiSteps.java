@@ -1,5 +1,6 @@
 package steps;
 
+import config.Config;
 import io.cucumber.java.es.Cuando;
 import io.cucumber.java.es.Dado;
 import io.cucumber.java.es.Entonces;
@@ -9,7 +10,6 @@ import io.restassured.response.Response;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
-import config.Config;
 
 public class AuthApiSteps {
 
@@ -20,6 +20,13 @@ public class AuthApiSteps {
     private Response respuesta;
     private String token;
 
+    // Usuario de prueba: sale de la configuración del ambiente
+    @Cuando("hago login en la API con el usuario de prueba")
+    public void hagoLoginConUsuarioDePrueba() {
+        hagoLogin(Config.get("api.usuario"), Config.get("api.clave"));
+    }
+
+    // Datos explícitos: disponible para casos negativos (clave incorrecta, etc.)
     @Cuando("hago login en la API con el usuario {string} y la clave {string}")
     public void hagoLogin(String usuario, String clave) {
         String body = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", usuario, clave);
@@ -31,9 +38,9 @@ public class AuthApiSteps {
                 .post("/auth/login");
     }
 
-    @Dado("que tengo un token válido del usuario {string} con clave {string}")
-    public void tengoUnTokenValido(String usuario, String clave) {
-        hagoLogin(usuario, clave);
+    @Dado("que tengo un token válido del usuario de prueba")
+    public void tengoUnTokenValido() {
+        hagoLoginConUsuarioDePrueba();
         token = respuesta.then().statusCode(200).extract().path("accessToken");
     }
 
@@ -70,6 +77,11 @@ public class AuthApiSteps {
     @Entonces("el campo {string} es {string}")
     public void elCampoEs(String campo, String valorEsperado) {
         respuesta.then().body(campo, equalTo(valorEsperado));
+    }
+
+    @Entonces("el campo {string} es el del usuario de prueba")
+    public void elCampoEsElDelUsuarioDePrueba(String campo) {
+        elCampoEs(campo, Config.get("api.usuario"));
     }
 
     // Método privado: no es un step, solo evita repetir código
