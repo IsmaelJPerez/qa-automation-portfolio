@@ -6,6 +6,7 @@ import io.cucumber.java.es.Entonces;
 import org.testng.Assert;
 import pages.InventoryPage;
 import pages.LoginPage;
+import config.Config;
 
 import java.util.List;
 
@@ -17,8 +18,8 @@ public class CarritoSteps {
     @Dado("que inicié sesión como {string}")
     public void queInicieSesionComo(String usuario) {
         LoginPage loginPage = new LoginPage(Hooks.getDriver());
-        loginPage.abrir();
-        loginPage.loginCon(usuario, "secret_sauce");
+        loginPage.abrir(Config.get("web.url"));
+        loginPage.loginCon(usuario, Config.get("web.clave"));
 
         inventario = new InventoryPage(Hooks.getDriver());
         Assert.assertEquals(inventario.obtenerTitulo(), "Products");

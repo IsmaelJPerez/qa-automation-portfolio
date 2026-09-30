@@ -26,8 +26,8 @@ public class LoginPage {
     }
 
     // 4. Acciones que puede hacer un usuario en esta página
-    public void abrir() {
-        driver.get("https://www.saucedemo.com/");
+    public void abrir(String url) {
+        driver.get(url);
     }
 
     public void loginCon(String usuario, String password) {
