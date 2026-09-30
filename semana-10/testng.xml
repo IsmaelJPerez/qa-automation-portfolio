@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- data-provider-thread-count: máximo de escenarios corriendo a la vez -->
+<suite name="Suite semana-10" data-provider-thread-count="3">
+    <test name="Cucumber">
+        <classes>
+            <class name="runners.TestRunner"/>
+        </classes>
+    </test>
+</suite>
