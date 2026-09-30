@@ -5,7 +5,7 @@ Característica: Carrito de compras
   Para después poder comprarlos
 
   Antecedentes:
-    Dado que inicié sesión como "standard_user"
+    Dado que inicié sesión como el usuario "estandar"
 
   @smoke
   Escenario: Agregar un producto al carrito

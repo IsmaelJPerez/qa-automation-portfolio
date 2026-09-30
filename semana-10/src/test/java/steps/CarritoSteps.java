@@ -1,12 +1,12 @@
 package steps;
 
+import config.Config;
 import io.cucumber.java.es.Cuando;
 import io.cucumber.java.es.Dado;
 import io.cucumber.java.es.Entonces;
 import org.testng.Assert;
 import pages.InventoryPage;
 import pages.LoginPage;
-import config.Config;
 
 import java.util.List;
 
@@ -15,11 +15,11 @@ public class CarritoSteps {
     private InventoryPage inventario;
 
     // Login completo en un solo paso: el foco de este feature es el carrito
-    @Dado("que inicié sesión como {string}")
-    public void queInicieSesionComo(String usuario) {
+    @Dado("que inicié sesión como el usuario {string}")
+    public void queInicieSesionComo(String alias) {
         LoginPage loginPage = new LoginPage(Hooks.getDriver());
         loginPage.abrir(Config.get("web.url"));
-        loginPage.loginCon(usuario, Config.get("web.clave"));
+        loginPage.loginCon(Config.get("usuario." + alias), Config.get("web.clave"));
 
         inventario = new InventoryPage(Hooks.getDriver());
         Assert.assertEquals(inventario.obtenerTitulo(), "Products");
@@ -38,8 +38,7 @@ public class CarritoSteps {
         }
     }
 
-    // "producto(s)": los paréntesis hacen opcional la "s",
-    // así este mismo método sirve para "1 producto" y "3 productos"
+    // "producto(s)": la "s" es opcional, sirve para "1 producto" y "3 productos"
     @Entonces("el carrito muestra {int} producto(s)")
     public void elCarritoMuestra(int cantidadEsperada) {
         Assert.assertEquals(inventario.cantidadEnCarrito(), cantidadEsperada,
